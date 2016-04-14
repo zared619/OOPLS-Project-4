@@ -55,9 +55,9 @@ class Prompter extends Actor {
   // To add logging of messages received,
   //   1. edit the application.conf file
   //   2. use the following line instead of def receive = {
-  //def receive = akka.event.LoggingReceive {
+  def receive = akka.event.LoggingReceive {
   
-  def receive = {
+  //def receive = {
     case QueryResult(fracContaining, numTotalPages) => {
       if(numTotalPages > 0){
         println((fracContaining*100.0) + "% of " + numTotalPages + " total pages matched.")
@@ -106,7 +106,7 @@ class Master extends Actor {
 			context.system.shutdown()
 		}
 		else {
-			val frac: Double = indexedPages.count(_.containsAll(terms))/indexedPages.length
+			val frac: Double = indexedPages.count(_.containsAll(terms)).toDouble / indexedPages.length.toDouble
 			sender ! QueryResult(frac,indexedPages.length)
 		}
    }
