@@ -38,7 +38,13 @@ class Fetcher extends Actor {
 	
 	def receive = {
 		case IndexRequest(url: String) => {
-			
+			try{
+				val src = scala.io.Source.fromURL( url ).getLines.mkString("\n")
+				sender ! Some(RawPage(url, src))
+			}
+			catch {
+				case java.io.IOException e: sender ! None
+			}
 		}
 	}
 }
