@@ -35,7 +35,6 @@ case class QueryResult(fractionContaining: Double, numTotalPages: Int)
 
 // TODO: write the Fetcher class  
 class Fetcher extends Actor {
-	
 	def receive = {
 		case IndexRequest(url: String) => {
 			try{
@@ -89,6 +88,15 @@ class Master extends Actor {
     // TODO: handle StartIndexing message
     
     // TODO: handle Query message
+   case Query(terms: Seq[String]) => {
+		if(terms.length == 0) {
+			context.system.shutdown()
+		}
+		else {
+			val frac: Double = indexedPages.count(_.containsAll(terms))/indexedPages.length
+			sender ! QueryResult(frac,indexedPages.length)
+		}
+   }
    
     case x: Option[_] => {
       // See if we got a RawPage back
