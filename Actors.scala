@@ -43,7 +43,7 @@ class Fetcher extends Actor {
 				sender ! Some(RawPage(url, src))
 			}
 			catch {
-				case java.io.IOException e: sender ! None
+				case e: java.io.IOException => sender ! None
 			}
 		}
 	}
