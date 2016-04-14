@@ -32,8 +32,7 @@ case class QueryResult(fractionContaining: Double, numTotalPages: Int)
 
 //////////////////////////////////
 // Actors
-
-// TODO: write the Fetcher class  
+ 
 class Fetcher extends Actor {
 	def receive = {
 		case IndexRequest(url: String) => {
@@ -83,9 +82,23 @@ class Master extends Actor {
   val indexedPages = scala.collection.mutable.ListBuffer[Page]()
   val indexedUrls = scala.collection.mutable.HashSet[String]()
   
+	private def createWorkers(numActors: Int) = {		
+		for (i <- 0 until numActors) yield context.actorOf(Props[Fetcher], name = s"worker-${i}")
+	}
+	
+	private def beginWorking(fileNames: Seq[String], workers: Seq[ActorRef]) = {
+		fileNames.zipWithIndex.foreach(thing => { workers(thing._2) ! IndexRequest(thing._1) } )
+	}
+  
   def receive = {
    
     // TODO: handle StartIndexing message
+	case StartIndexing(urls: Seq[String]) => {
+		val workers = createWorkers(urls.length)
+		beginWorking(urls, workers)
+		
+		context.actorOf(Props[Prompter], name =s"THE_Prompter") ! QueryResult(0.0, 0)
+	}
     
     // TODO: handle Query message
    case Query(terms: Seq[String]) => {
