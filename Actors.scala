@@ -34,7 +34,14 @@ case class QueryResult(fractionContaining: Double, numTotalPages: Int)
 // Actors
 
 // TODO: write the Fetcher class  
-
+class Fetcher extends Actor {
+	
+	def receive = {
+		case IndexRequest(url: String) => {
+			
+		}
+	}
+}
 
 // Prompter asks the user to enter queries,
 //   then sends them along to the Master,
